@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration scan="true" scanPeriod="30 seconds">
+	<!--<property name="LOG_HOME" value="logs" />-->
+	<springProperty scope="context" name="LOG_HOME" source="logging.path"/>
+	<property name="immediateFlush" value="true" />
+
+	<!-- 按照每天生成日志文件 -->
+	<appender name="Server_INFO"
+		class="ch.qos.logback.core.rolling.RollingFileAppender">
+
+		<filter class="ch.qos.logback.classic.filter.LevelFilter">
+			<level>INFO</level>
+			<onMatch>ACCEPT</onMatch>
+		</filter>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<!--日志文件输出的文件名 -->
+			<FileNamePattern>${LOG_HOME}/service-%d{yyyy-MM-dd}.log
+			</FileNamePattern>
+			<MaxHistory>7</MaxHistory>
+		</rollingPolicy>
+		<encoder>
+			<charset>utf-8</charset>
+			<immediateFlush>${immediateFlush}</immediateFlush>
+			<!--格式化输出：%d表示日期，%thread表示线程名，%-2level：级别从左显示5个字符宽度%msg：日志消息，%n是换行符 -->
+			<pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %level %logger{50} -%msg%n</pattern>
+		</encoder>
+	</appender>
+
+	<appender name="Server_INFO_ASYNC" class="ch.qos.logback.classic.AsyncAppender">
+		<discardingThreshold>0</discardingThreshold>
+		<queueSize>512</queueSize>
+		<includeCallerData>true</includeCallerData>
+		<appender-ref ref="Server_INFO" />
+	</appender>
+
+	<!-- 日志输出级别 -->
+	<root level="INFO">
+		<appender-ref ref="Server_INFO_ASYNC" />
+	</root>
+
+</configuration>
